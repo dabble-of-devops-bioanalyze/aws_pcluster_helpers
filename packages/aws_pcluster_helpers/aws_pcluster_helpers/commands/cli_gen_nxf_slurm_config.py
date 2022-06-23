@@ -7,7 +7,7 @@ import sys
 
 from aws_pcluster_helpers.utils.logging import setup_logger
 
-logger = setup_logger('nxf')
+logger = setup_logger("nxf")
 
 
 def main(outfile, overwrite, stdout):
@@ -16,12 +16,15 @@ def main(outfile, overwrite, stdout):
     if outfile:
         if os.path.exists(outfile) and not overwrite:
             logger.warn(
-                f'Outfile: {outfile} exists. Please specify --overwrite print your config or select a file that does not exist.')
+                f"Outfile: {outfile} exists. Please specify --overwrite print your config or select a file that does not exist."
+            )
             sys.exit(1)
-        with open(outfile, 'w') as fh:
+        with open(outfile, "w") as fh:
             fh.write(data)
     if stdout:
         print(data)
     else:
-        logger.warn(f'Neither --outfile or --stdout were selected. Printing to the screen anyways.')
+        logger.warn(
+            f"Neither --outfile or --stdout were selected. Printing to the screen anyways."
+        )
         print(data)

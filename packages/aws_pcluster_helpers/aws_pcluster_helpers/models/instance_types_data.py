@@ -7,7 +7,7 @@ from datasize import DataSize
 from copy import deepcopy
 from typing import Dict
 
-from mypy_boto3_ec2.type_defs import (InstanceTypeDef)
+from mypy_boto3_ec2.type_defs import InstanceTypeDef
 from pydantic.dataclasses import dataclass
 
 from devtools import PrettyFormat, pprint, pformat, debug
@@ -43,28 +43,29 @@ class InstanceTypesMappings:
             instance_types = json_data[queue]
             for sinfo_instance_type in instance_types:
                 t_inverse_data = {}
-                t_data = {}
                 instance_type = instance_types[sinfo_instance_type]
-                t_inverse_data['ec2_instance_type'] = instance_type
-                t_inverse_data['sinfo_instance_type'] = sinfo_instance_type
+                t_inverse_data["ec2_instance_type"] = instance_type
+                t_inverse_data["sinfo_instance_type"] = sinfo_instance_type
                 if instance_type not in inverse_data.keys():
                     inverse_data[instance_type] = {}
                 if sinfo_instance_type not in data.keys():
                     data[sinfo_instance_type] = {}
                 inverse_data[instance_type].update(t_inverse_data)
                 data[sinfo_instance_type].update(t_inverse_data)
-                if 'queues' not in inverse_data[instance_type].keys():
-                    inverse_data[instance_type]['queues'] = [queue]
-                    data[sinfo_instance_type]['queues'] = [queue]
+                if "queues" not in inverse_data[instance_type].keys():
+                    inverse_data[instance_type]["queues"] = [queue]
+                    data[sinfo_instance_type]["queues"] = [queue]
                 else:
-                    inverse_data[instance_type]['queues'].append(queue)
-                    data[sinfo_instance_type]['queues'].append(queue)
-        return InstanceTypesMappings(ec2_instance_types=inverse_data, sinfo_instance_types=data)
+                    inverse_data[instance_type]["queues"].append(queue)
+                    data[sinfo_instance_type]["queues"].append(queue)
+        return InstanceTypesMappings(
+            ec2_instance_types=inverse_data, sinfo_instance_types=data
+        )
 
 
 def size_in_gib(mib: int) -> int:
-    mib_bytes = DataSize(f'{mib}Mi')
-    return mib_bytes / mib_bytes.IEC_prefixes['Gi']
+    mib_bytes = DataSize(f"{mib}Mi")
+    return mib_bytes / mib_bytes.IEC_prefixes["Gi"]
 
 
 @dataclass(config=Config)
@@ -73,15 +74,15 @@ class InstanceTypesData:
 
     @property
     def instance_type_data(self) -> InstanceTypeDef:
-        if 'Hypervisor' in self.data.keys():
-            if 'nitro' in self.data['Hypervisor']:
-                self.data['Hypervisor'] = 'xen'
-        if 'MemoryInfo' in self.data.keys():
-            if 'SizeInMib' in self.data['MemoryInfo'].keys():
-                size_in_mib = self.data['MemoryInfo']['SizeInMib']
-                bytes = DataSize(f'{size_in_mib}Mi')
-                gibs = bytes / bytes.IEC_prefixes['Gi']
-                self.data['MemoryInfo']['SizeInGib'] = gibs
+        if "Hypervisor" in self.data.keys():
+            if "nitro" in self.data["Hypervisor"]:
+                self.data["Hypervisor"] = "xen"
+        if "MemoryInfo" in self.data.keys():
+            if "SizeInMib" in self.data["MemoryInfo"].keys():
+                size_in_mib = self.data["MemoryInfo"]["SizeInMib"]
+                bytes = DataSize(f"{size_in_mib}Mi")
+                gibs = bytes / bytes.IEC_prefixes["Gi"]
+                self.data["MemoryInfo"]["SizeInGib"] = gibs
         else:
             debug(self.data)
         return deepcopy(self.data)
@@ -101,6 +102,6 @@ class PClusterInstanceTypes:
         data = json.load(open(json_file))
         instance_type_defs = {}
         for k in data.keys():
-            instance_type_defs[k] = InstanceTypesData(data={'data': data[k]})
+            instance_type_defs[k] = InstanceTypesData(data={"data": data[k]})
 
         return PClusterInstanceTypes(instance_type_data=instance_type_defs)

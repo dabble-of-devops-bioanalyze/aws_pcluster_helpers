@@ -8,18 +8,18 @@ from colorlog import ColoredFormatter
 seperator = "----------------------------------------------------\n"
 
 levels = {
-    'critical': logging.CRITICAL,
-    'error': logging.ERROR,
-    'warn': logging.WARNING,
-    'warning': logging.WARNING,
-    'info': logging.INFO,
-    'debug': logging.DEBUG
+    "critical": logging.CRITICAL,
+    "error": logging.ERROR,
+    "warn": logging.WARNING,
+    "warning": logging.WARNING,
+    "info": logging.INFO,
+    "debug": logging.DEBUG,
 }
 
 
 def setup_logger(
     logger_name: str = "[pcluster helpers]",
-    log_level: str = os.environ.get('LOG_LEVEL', "INFO"),
+    log_level: str = os.environ.get("LOG_LEVEL", "INFO"),
     **kwargs,
 ) -> logging.getLogger:
     """
