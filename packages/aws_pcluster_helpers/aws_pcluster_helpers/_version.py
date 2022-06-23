@@ -42,7 +42,7 @@ def get_config():
     cfg = VersioneerConfig()
     cfg.VCS = "git"
     cfg.style = "pep440"
-    cfg.tag_prefix = ""
+    cfg.tag_prefix = None
     cfg.parentdir_prefix = ""
     cfg.versionfile_source = "aws_pcluster_helpers/_version.py"
     cfg.verbose = False
