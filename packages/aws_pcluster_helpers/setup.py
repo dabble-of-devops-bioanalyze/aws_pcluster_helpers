@@ -10,18 +10,10 @@ with open('README.rst') as readme_file:
 
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
-
-requirements = [
-    'devtools',
-    'colorlog',
-    'pydantic',
-    'boto3',
-    'boto3-stubs[essential]',
-    'datasize',
-    'rich-click',
-    'pandas',
-    'cookiecutter'
-]
+with open("README.rst", "r") as fh:
+    long_description = fh.read()
+with open("requirements.txt", "r") as fh:
+    requirements = [line.strip() for line in fh]
 
 test_requirements = []
 
