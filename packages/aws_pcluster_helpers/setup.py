@@ -62,7 +62,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/dabble-of-devops-bioanalyze/aws_pcluster_helpers',
-    # version='0.5.0',
     zip_safe=False,
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
