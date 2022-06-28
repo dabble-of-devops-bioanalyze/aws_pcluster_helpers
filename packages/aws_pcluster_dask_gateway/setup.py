@@ -2,8 +2,8 @@
 
 """The setup script."""
 
-import versioneer
 from setuptools import setup, find_packages
+import versioneer
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -17,7 +17,7 @@ with open("requirements.txt", "r") as fh:
 test_requirements = []
 
 setup(
-    author=" Jillian Rowe",
+    author="Jillian Rowe",
     author_email='jillian@dabbleofdevops.com',
     python_requires='>=3.6',
     classifiers=[
@@ -30,17 +30,22 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
     ],
-    description="Extend Jupyterhub's BatchSpawner to deal with AWS ParallelCluster's SLURM environment",
+    description="A helper function to configure Dask Gateway to play nice with AWS PCluster",
+    entry_points={
+        'console_scripts': [
+            'aws_pcluster_dask_gateway=aws_pcluster_dask_gateway.cli:main',
+        ],
+    },
     install_requires=requirements,
     license="Apache Software License 2.0",
     long_description=readme + '\n\n' + history,
     include_package_data=True,
-    keywords='aws_pcluster_slurm_spawner',
-    name='aws_pcluster_slurm_spawner',
-    packages=find_packages(include=['aws_pcluster_slurm_spawner', 'aws_pcluster_slurm_spawner.*']),
+    keywords='aws_pcluster_dask_gateway',
+    name='aws_pcluster_dask_gateway',
+    packages=find_packages(include=['aws_pcluster_dask_gateway', 'aws_pcluster_dask_gateway.*']),
     test_suite='tests',
     tests_require=test_requirements,
-    url='https://github.com/dabble-of-devops-bioanalyze/aws_pcluster_slurm_spawner',
+    url='https://github.com/bioanalyze/aws_pcluster_helpers',
     zip_safe=False,
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),

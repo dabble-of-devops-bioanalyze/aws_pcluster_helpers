@@ -1,6 +1,7 @@
 """Main module."""
 
 import os
+from datetime import datetime, date, time, timezone
 import json
 
 import shlex
@@ -37,11 +38,30 @@ from aws_pcluster_helpers.models.sinfo import (SInfoTable, SinfoRow)
 
 pcluster_spawner_template_paths = os.path.join(os.path.dirname(__file__), 'templates')
 
+import asyncio
+from async_generator import async_generator, yield_
+import pwd
+import os
+import re
+
+import xml.etree.ElementTree as ET
+
+from enum import Enum
+
+from jinja2 import Template
+
+from tornado import gen
+
+from jupyterhub.spawner import Spawner
+from traitlets import Integer, Unicode, Float, Dict, default
+
+from jupyterhub.spawner import set_user_setuid
+
 
 class PClusterSlurmSpawner(batchspawner.SlurmSpawner):
     batch_script = Unicode("""#!/bin/bash
-#SBATCH --output={{homedir}}/jupyterhub_slurmspawner_%j.log
-#SBATCH --job-name=spawner-jupyterhub
+#SBATCH --output={{homedir}}/{{job_prefix}}_%j.log
+#SBATCH --job-name={{job_prefix}}
 #SBATCH --chdir={{homedir}}
 #SBATCH --export={{keepvars}}
 #SBATCH --get-user-env=L
@@ -138,6 +158,7 @@ echo "jupyterhub-singleuser ended gracefully"
     )
 
     _profile_list = None
+    job_prefix = "jupyterhub_slurmspawner"
 
     def _init_profile_list(self, profile_list):
         # generate missing slug fields from display_name
@@ -341,6 +362,7 @@ echo "jupyterhub-singleuser ended gracefully"
                 'req_custom_r': '',
                 'req_constraint': first_row.constraint,
                 'exclusive': True,
+                'job_prefix': self.job_prefix,
                 # 'slurm_spawner_table': html_table,
                 'slurm_spawner_table': '',
                 'profile': profile_form,
@@ -349,6 +371,7 @@ echo "jupyterhub-singleuser ended gracefully"
             # TODO If there's nothing in the table we have a problem
             defaults = {
                 'slurm_spawner_table': '',
+                'job_prefix': self.job_prefix,
                 # 'slurm_spawner_table': html_table,
                 'profile': profile_form,
             }
@@ -431,3 +454,37 @@ echo "jupyterhub-singleuser ended gracefully"
         self.log.debug(submission_data)
 
         return submission_data
+
+    @async_generator
+    async def progress(self):
+        state = self.get_state()
+        dt = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+        await yield_(
+            {
+                "message": f"""
+                [{dt}]: Job {state['job_id']} submitted. Please watch the progress bar for more information.
+                 You can also run tail -f ~/{self.job_prefix}_{state['job_id']}.log from a terminal.
+                """,
+            }
+        )
+        while True:
+            if self.state_ispending():
+                await yield_(
+                    {
+                        "message": f"[{dt}]: Job {state['job_id']} pending in queue...",
+                    }
+                )
+            elif self.state_isrunning():
+                await yield_(
+                    {
+                        "message": f"[{dt}]: Job {state['job_id']} cluster job running... waiting to connect",
+                    }
+                )
+                return
+            else:
+                await yield_(
+                    {
+                        "message": f"[{dt}]: Job {state['job_id']} unknown status...",
+                    }
+                )
+            await gen.sleep(1)
