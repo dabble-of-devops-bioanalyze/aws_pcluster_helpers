@@ -158,7 +158,8 @@ echo "jupyterhub-singleuser ended gracefully"
     )
 
     _profile_list = None
-    job_prefix = "jupyterhub_slurmspawner"
+
+    job_prefix = Unicode("jupyterhub_spawner")
 
     def _init_profile_list(self, profile_list):
         # generate missing slug fields from display_name

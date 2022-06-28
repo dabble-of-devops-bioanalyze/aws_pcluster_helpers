@@ -56,6 +56,7 @@ class SInfoTable:
             {"label": "Queue", "key": "queue"},
             {"label": "Constraint", "key": "constraint"},
             {"label": "Mem(Gib)", "key": "mem"},
+            {"label": "VCPU", "key": "vcpu"},
             {"label": "CPU", "key": "cpu"},
             {"label": "EC2", "key": "ec2_instance_type"},
         ]
