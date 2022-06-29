@@ -39,7 +39,7 @@ class SinfoRow:
     ec2_instance_type: str
     mem: int
     cpu: int
-    vcpu: int
+    vcpu: Optional[int]
     gpu: Optional[dict]
     gpus: Optional[List]
     extra: Optional[dict]
