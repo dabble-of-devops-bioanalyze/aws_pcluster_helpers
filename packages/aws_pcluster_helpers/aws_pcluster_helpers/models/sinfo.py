@@ -40,7 +40,7 @@ class SinfoRow:
     mem: int
     cpu: int
     vcpu: Optional[int]
-    gpu: Optional[dict]
+    # gpu: Optional[dict]
     gpus: Optional[List]
     extra: Optional[dict]
 

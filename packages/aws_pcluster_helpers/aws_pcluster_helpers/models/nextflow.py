@@ -51,7 +51,7 @@ defaults = {
     "constraint": None,
     "ec2_instance_type": None,
     "gpus": None,
-    "gpu": None,
+    # "gpu": None,
     "extra": None,
     "vcpu": None,
 }
