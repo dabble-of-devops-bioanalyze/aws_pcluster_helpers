@@ -53,6 +53,7 @@ defaults = {
     "gpus": None,
     "gpu": None,
     "extra": None,
+    "vcpu": None,
 }
 
 

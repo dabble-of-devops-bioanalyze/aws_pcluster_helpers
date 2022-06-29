@@ -1,6 +1,7 @@
 """Main module."""
 
 import os
+import time
 from datetime import datetime, date, time, timezone
 import json
 
@@ -59,6 +60,7 @@ from jupyterhub.spawner import set_user_setuid
 
 
 class PClusterSlurmSpawner(batchspawner.SlurmSpawner):
+    # This is tied to the dict returned by the submission_data function
     batch_script = Unicode("""#!/bin/bash
 #SBATCH --output={{homedir}}/{{job_prefix}}_%j.log
 #SBATCH --job-name={{job_prefix}}
@@ -407,6 +409,9 @@ echo "jupyterhub-singleuser ended gracefully"
         return rtemplate.render(**defaults)
 
     def options_from_form(self, formdata):
+        """
+        The return from this function is what is read into teh SLURM script
+        """
         submission_data = {}
 
         # self.log.debug('--------------------------------')
@@ -469,6 +474,7 @@ echo "jupyterhub-singleuser ended gracefully"
             }
         )
         while True:
+            time.sleep(10)
             if self.state_ispending():
                 await yield_(
                     {
