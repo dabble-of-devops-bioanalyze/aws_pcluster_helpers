@@ -99,6 +99,7 @@ class NXFSlurmConfig(sinfo.SInfoTable):
                 ),
             )
             self.default_processes[key].queue = self.processes[best_match].queue
+            self.default_processes[key].vcpu = self.processes[best_match].vcpu
             self.default_processes[key].constraint = self.processes[
                 best_match
             ].constraint
