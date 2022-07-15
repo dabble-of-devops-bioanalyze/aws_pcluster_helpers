@@ -500,4 +500,4 @@ echo "jupyterhub-singleuser ended gracefully"
 
 def get_ec2_address(address_type='public_ipv4') -> str:
     response = requests.get(' http://169.254.169.254/latest/meta-data/public-ipv4')
-    return reponse.content.decode('utf-8')
+    return response.content.decode('utf-8')
