@@ -8,3 +8,4 @@ humanize
 rich-click
 pandas
 cookiecutter
+prefect==1

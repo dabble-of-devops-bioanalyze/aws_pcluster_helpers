@@ -39,6 +39,7 @@ from aws_pcluster_helpers.models.sinfo import (SInfoTable, SinfoRow)
 
 pcluster_spawner_template_paths = os.path.join(os.path.dirname(__file__), 'templates')
 
+import requests
 import asyncio
 from async_generator import async_generator, yield_
 import pwd
@@ -495,3 +496,8 @@ echo "jupyterhub-singleuser ended gracefully"
                     }
                 )
             await gen.sleep(1)
+
+
+def get_ec2_address(address_type='public_ipv4') -> str:
+    response = requests.get(' http://169.254.169.254/latest/meta-data/public-ipv4')
+    return reponse.content.decode('utf-8')

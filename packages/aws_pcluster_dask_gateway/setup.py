@@ -47,6 +47,7 @@ setup(
     tests_require=test_requirements,
     url='https://github.com/bioanalyze/aws_pcluster_helpers',
     zip_safe=False,
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
+    version="0.0.18"
+    # version=versioneer.get_version(),
+    # cmdclass=versioneer.get_cmdclass(),
 )
