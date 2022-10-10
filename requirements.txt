@@ -8,3 +8,4 @@ humanize
 rich-click
 pandas
 cookiecutter
+aws-parallelcluster==3.2.1
