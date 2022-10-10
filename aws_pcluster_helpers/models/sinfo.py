@@ -1,5 +1,3 @@
-import functools
-from pydantic import BaseModel, FilePath, DirectoryPath, validator
 from typing import Any
 from typing import List, Optional
 
@@ -12,9 +10,9 @@ from aws_pcluster_helpers import (
 )
 from aws_pcluster_helpers.models.config import PClusterConfigFiles
 from aws_pcluster_helpers.utils.logging import setup_logger
-from pydantic import BaseModel
 from pcluster.config.cluster_config import SlurmClusterConfig
-from pcluster.schemas.cluster_schema import ClusterSchema
+from pydantic import BaseModel
+from pydantic import validator
 from rich.table import Table
 
 logger = setup_logger(logger_name="sinfo")

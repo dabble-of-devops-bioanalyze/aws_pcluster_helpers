@@ -6,12 +6,8 @@ __version__ = "0.1.0"
 
 from aws_pcluster_helpers.models.config import PClusterConfigFiles
 
-# from aws_pcluster_helpers.models.sinfo import (SInfoTable, SinfoRow)
 from aws_pcluster_helpers.models.pcluster_config import (
     PClusterConfig,
-    ComputeSettings,
-    ComputeResource,
-    SlurmQueue,
 )
 from aws_pcluster_helpers.models.instance_types_data import (
     InstanceTypesData,
