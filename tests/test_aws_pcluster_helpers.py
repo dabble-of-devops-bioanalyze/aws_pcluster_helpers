@@ -18,10 +18,12 @@ from aws_pcluster_helpers.models.config import (
     ENV_INSTANCE_TYPES_DATA_FILE,
     ENV_INSTANCE_TYPE_MAPPINGS_FILE,
 )
+from aws_pcluster_helpers.models.sinfo import SInfoTable, SinfoRow
 import yaml
 import json
 import os
 from devtools import PrettyFormat, pprint, pformat, debug
+from rich.console import Console
 
 instance_types_data_file = os.path.join(
     os.path.dirname(__file__), "instance-types-data.json"
@@ -37,6 +39,19 @@ os.environ[ENV_PCLUSTER_CONFIG_FILE] = pcluster_config_file
 logger = setup_logger(logger_name="tests", log_level="DEBUG")
 
 
+def test_files():
+    assert os.path.exists(instance_type_mapping_file)
+    assert os.path.exists(pcluster_config_file)
+    assert os.path.exists(instance_types_data_file)
+
+
+def test_sinfo():
+    sinfo = SInfoTable()
+    table = sinfo.get_table()
+    console = Console()
+    console.print(table)
+
+
 def test_load_pcluster_config():
     pcluster_config = PClusterConfig.from_yaml(pcluster_config_file)
     assert pcluster_config
@@ -44,7 +59,7 @@ def test_load_pcluster_config():
 
 def test_load_instance_types_data():
     pcluster_instance_types = PClusterInstanceTypes.from_json(instance_types_data_file)
-    debug(pcluster_instance_types)
+    # debug(pcluster_instance_types)
     assert pcluster_instance_types
 
 

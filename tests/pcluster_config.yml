@@ -1,31 +1,31 @@
 Region: us-east-1
 Image:
     Os: alinux2
-    CustomAmi: ami-cpuid
+    CustomAmi: ami-0a1f818c896c17554
 Tags:
-    -   Key: Environment
-        Value: hpc
-    -   Key: Name
-        Value: test-hpc-dev-slurm
-    -   Key: Namespace
-        Value: test
-    -   Key: Stage
-        Value: dev
+    -   Key: "Environment"
+        Value: "hpc"
+    -   Key: "Name"
+        Value: "bioanalyze-hpc-dev-slurm"
+    -   Key: "Namespace"
+        Value: "bioanalyze"
+    -   Key: "Stage"
+        Value: "dev"
 
 
 HeadNode:
     InstanceType: t3a.medium
     Networking:
         ElasticIp: true
-        SubnetId: subnet-456
+        SubnetId: subnet-03cab08269a2d4fda
         AdditionalSecurityGroups:
-            - sg-123
-            - sg-456
+            - sg-0e1f61a41a6ec9d1a
+            - sg-0b779788d0c8b4f7f
     Dcv:
         Enabled: true
         Port: 8443
     Ssh:
-        KeyName: test-hpc-dev-slurm
+        KeyName: bioanalyze-hpc-dev-slurm
     LocalStorage:
         RootVolume:
             Size: 1000
@@ -33,11 +33,15 @@ HeadNode:
             MountDir: "/data"
     Iam:
         S3Access:
-            -   BucketName: "test-hpc-dev-slurm"
+            -   BucketName: "bioanalyze-hpc-dev-slurm"
                 EnableWriteAccess: true
+        AdditionalIamPolicies:
+            -   Policy: arn:aws:iam::115935009134:policy/slurm-policy
+            -   Policy: arn:aws:iam::aws:policy/ReadOnlyAccess
+            -   Policy: arn:aws:iam::aws:policy/AmazonS3FullAccess
     CustomActions:
         OnNodeConfigured:
-            Script: "s3://test-hpc-dev-slurm/slurm-startup-scripts/install_all_the_things.sh"
+            Script: "s3://bioanalyze-hpc-dev-slurm/bootstrap_head_node.sh"
 
 Monitoring:
     Logs:
@@ -60,7 +64,7 @@ SharedStorage:
 Scheduling:
     Scheduler: slurm
     SlurmQueues:
-        -   Name: "basic"
+        -   Name: "dev"
             ComputeSettings:
                 LocalStorage:
                     RootVolume:
@@ -69,8 +73,61 @@ Scheduling:
                         MountDir: /data
             ComputeResources:
 
-                -   Name: t32xlarge
-                    InstanceType: "t3.2xlarge"
+                -   Name: m5axlarge
+                    InstanceType: "m5a.xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+                -   Name: m5a2xlarge
+                    InstanceType: "m5a.2xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+                -   Name: m5a4xlarge
+                    InstanceType: "m5a.4xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+                -   Name: m5a8xlarge
+                    InstanceType: "m5a.8xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+                -   Name: m5a12xlarge
+                    InstanceType: "m5a.12xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+            CustomActions:
+                OnNodeConfigured:
+                    Script: "s3://bioanalyze-hpc-dev-slurm/install_all_the_things.sh"
+            Iam:
+                S3Access:
+                    -   BucketName: "bioanalyze-hpc-dev-slurm"
+                        EnableWriteAccess: true
+                AdditionalIamPolicies:
+                    -   Policy: arn:aws:iam::115935009134:policy/slurm-policy
+                    -   Policy: arn:aws:iam::aws:policy/ReadOnlyAccess
+                    -   Policy: arn:aws:iam::aws:policy/AmazonS3FullAccess
+            Image:
+                CustomAmi: ami-0a1f818c896c17554
+            Networking:
+                SubnetIds:
+                    - subnet-03cab08269a2d4fda
+                AdditionalSecurityGroups:
+                    - sg-0e1f61a41a6ec9d1a
+                    - sg-0b779788d0c8b4f7f
+        -   Name: "dev-low"
+            ComputeSettings:
+                LocalStorage:
+                    RootVolume:
+                        Size: 1000
+                    EphemeralVolume:
+                        MountDir: /data
+            ComputeResources:
+
+                -   Name: t3amedium
+                    InstanceType: "t3a.medium"
                     MinCount: 0
                     MaxCount: 1000
 
@@ -84,22 +141,36 @@ Scheduling:
                     MinCount: 0
                     MaxCount: 1000
 
+                -   Name: t3a2xlarge
+                    InstanceType: "t3a.2xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+                -   Name: m6i2xlarge
+                    InstanceType: "m6i.2xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
             CustomActions:
                 OnNodeConfigured:
-                    Script: "s3://test-hpc-dev-slurm/slurm-startup-scripts/install_all_the_things.sh"
+                    Script: "s3://bioanalyze-hpc-dev-slurm/install_all_the_things.sh"
             Iam:
                 S3Access:
-                    -   BucketName: "test-hpc-dev-slurm"
+                    -   BucketName: "bioanalyze-hpc-dev-slurm"
                         EnableWriteAccess: true
+                AdditionalIamPolicies:
+                    -   Policy: arn:aws:iam::115935009134:policy/slurm-policy
+                    -   Policy: arn:aws:iam::aws:policy/ReadOnlyAccess
+                    -   Policy: arn:aws:iam::aws:policy/AmazonS3FullAccess
             Image:
-                CustomAmi: ami-cpuid
+                CustomAmi: ami-0a1f818c896c17554
             Networking:
                 SubnetIds:
-                    - subnet-456
+                    - subnet-03cab08269a2d4fda
                 AdditionalSecurityGroups:
-                    - sg-123
-                    - sg-456
-        -   Name: "mem"
+                    - sg-0e1f61a41a6ec9d1a
+                    - sg-0b779788d0c8b4f7f
+        -   Name: "dev-high"
             ComputeSettings:
                 LocalStorage:
                     RootVolume:
@@ -108,37 +179,51 @@ Scheduling:
                         MountDir: /data
             ComputeResources:
 
-                -   Name: m5a4xlarge
-                    InstanceType: "m5a.4xlarge"
+                -   Name: m6i8xlarge
+                    InstanceType: "m6i.8xlarge"
                     MinCount: 0
                     MaxCount: 1000
 
-                -   Name: r6i2xlarge
-                    InstanceType: "r6i.2xlarge"
+                -   Name: m6i12xlarge
+                    InstanceType: "m6i.12xlarge"
                     MinCount: 0
                     MaxCount: 1000
 
-                -   Name: c6a8xlarge
-                    InstanceType: "c6a.8xlarge"
+                -   Name: m6i16xlarge
+                    InstanceType: "m6i.16xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+                -   Name: m6i24xlarge
+                    InstanceType: "m6i.24xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+                -   Name: m6i32xlarge
+                    InstanceType: "m6i.32xlarge"
                     MinCount: 0
                     MaxCount: 1000
 
             CustomActions:
                 OnNodeConfigured:
-                    Script: "s3://test-hpc-dev-slurm/slurm-startup-scripts/install_all_the_things.sh"
+                    Script: "s3://bioanalyze-hpc-dev-slurm/install_all_the_things.sh"
             Iam:
                 S3Access:
-                    -   BucketName: "test-hpc-dev-slurm"
+                    -   BucketName: "bioanalyze-hpc-dev-slurm"
                         EnableWriteAccess: true
+                AdditionalIamPolicies:
+                    -   Policy: arn:aws:iam::115935009134:policy/slurm-policy
+                    -   Policy: arn:aws:iam::aws:policy/ReadOnlyAccess
+                    -   Policy: arn:aws:iam::aws:policy/AmazonS3FullAccess
             Image:
-                CustomAmi: ami-cpuid
+                CustomAmi: ami-0a1f818c896c17554
             Networking:
                 SubnetIds:
-                    - subnet-456
+                    - subnet-03cab08269a2d4fda
                 AdditionalSecurityGroups:
-                    - sg-123
-                    - sg-456
-        -   Name: "big"
+                    - sg-0e1f61a41a6ec9d1a
+                    - sg-0b779788d0c8b4f7f
+        -   Name: "memory-low"
             ComputeSettings:
                 LocalStorage:
                     RootVolume:
@@ -146,43 +231,52 @@ Scheduling:
                     EphemeralVolume:
                         MountDir: /data
             ComputeResources:
-
-                -   Name: m5a8xlarge
-                    InstanceType: "m5a.8xlarge"
-                    MinCount: 0
-                    MaxCount: 1000
-
-                -   Name: m5a16xlarge
-                    InstanceType: "m5a.16xlarge"
-                    MinCount: 0
-                    MaxCount: 1000
 
                 -   Name: r6i4xlarge
                     InstanceType: "r6i.4xlarge"
                     MinCount: 0
                     MaxCount: 1000
 
-                -   Name: c6a16xlarge
-                    InstanceType: "c6a.16xlarge"
+                -   Name: r6i8xlarge
+                    InstanceType: "r6i.8xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+                -   Name: r6i12xlarge
+                    InstanceType: "r6i.12xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+                -   Name: r6i16xlarge
+                    InstanceType: "r6i.16xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+                -   Name: r6i24xlarge
+                    InstanceType: "r6i.24xlarge"
                     MinCount: 0
                     MaxCount: 1000
 
             CustomActions:
                 OnNodeConfigured:
-                    Script: "s3://test-hpc-dev-slurm/slurm-startup-scripts/install_all_the_things.sh"
+                    Script: "s3://bioanalyze-hpc-dev-slurm/install_all_the_things.sh"
             Iam:
                 S3Access:
-                    -   BucketName: "test-hpc-dev-slurm"
+                    -   BucketName: "bioanalyze-hpc-dev-slurm"
                         EnableWriteAccess: true
+                AdditionalIamPolicies:
+                    -   Policy: arn:aws:iam::115935009134:policy/slurm-policy
+                    -   Policy: arn:aws:iam::aws:policy/ReadOnlyAccess
+                    -   Policy: arn:aws:iam::aws:policy/AmazonS3FullAccess
             Image:
-                CustomAmi: ami-cpuid
+                CustomAmi: ami-0a1f818c896c17554
             Networking:
                 SubnetIds:
-                    - subnet-456
+                    - subnet-03cab08269a2d4fda
                 AdditionalSecurityGroups:
-                    - sg-123
-                    - sg-456
-        -   Name: "gpu"
+                    - sg-0e1f61a41a6ec9d1a
+                    - sg-0b779788d0c8b4f7f
+        -   Name: "memory-high"
             ComputeSettings:
                 LocalStorage:
                     RootVolume:
@@ -191,20 +285,207 @@ Scheduling:
                         MountDir: /data
             ComputeResources:
 
-                -   Name: p32xlarge
-                    InstanceType: "p3.2xlarge"
+                -   Name: r6i24xlarge
+                    InstanceType: "r6i.24xlarge"
                     MinCount: 0
                     MaxCount: 1000
 
-                -   Name: p38xlarge
-                    InstanceType: "p3.8xlarge"
+                -   Name: r5ad24xlarge
+                    InstanceType: "r5ad.24xlarge"
                     MinCount: 0
                     MaxCount: 1000
 
-                -   Name: p316xlarge
-                    InstanceType: "p3.16xlarge"
+                -   Name: r6i32xlarge
+                    InstanceType: "r6i.32xlarge"
                     MinCount: 0
                     MaxCount: 1000
+
+            CustomActions:
+                OnNodeConfigured:
+                    Script: "s3://bioanalyze-hpc-dev-slurm/install_all_the_things.sh"
+            Iam:
+                S3Access:
+                    -   BucketName: "bioanalyze-hpc-dev-slurm"
+                        EnableWriteAccess: true
+                AdditionalIamPolicies:
+                    -   Policy: arn:aws:iam::115935009134:policy/slurm-policy
+                    -   Policy: arn:aws:iam::aws:policy/ReadOnlyAccess
+                    -   Policy: arn:aws:iam::aws:policy/AmazonS3FullAccess
+            Image:
+                CustomAmi: ami-0a1f818c896c17554
+            Networking:
+                SubnetIds:
+                    - subnet-03cab08269a2d4fda
+                AdditionalSecurityGroups:
+                    - sg-0e1f61a41a6ec9d1a
+                    - sg-0b779788d0c8b4f7f
+        -   Name: "compute-low"
+            ComputeSettings:
+                LocalStorage:
+                    RootVolume:
+                        Size: 1000
+                    EphemeralVolume:
+                        MountDir: /data
+            ComputeResources:
+
+                -   Name: c6i4xlarge
+                    InstanceType: "c6i.4xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+                -   Name: c6i8xlarge
+                    InstanceType: "c6i.8xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+                -   Name: c6i12xlarge
+                    InstanceType: "c6i.12xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+                -   Name: c6i16xlarge
+                    InstanceType: "c6i.16xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+                -   Name: c518xlarge
+                    InstanceType: "c5.18xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+            CustomActions:
+                OnNodeConfigured:
+                    Script: "s3://bioanalyze-hpc-dev-slurm/install_all_the_things.sh"
+            Iam:
+                S3Access:
+                    -   BucketName: "bioanalyze-hpc-dev-slurm"
+                        EnableWriteAccess: true
+                AdditionalIamPolicies:
+                    -   Policy: arn:aws:iam::115935009134:policy/slurm-policy
+                    -   Policy: arn:aws:iam::aws:policy/ReadOnlyAccess
+                    -   Policy: arn:aws:iam::aws:policy/AmazonS3FullAccess
+            Image:
+                CustomAmi: ami-0a1f818c896c17554
+            Networking:
+                SubnetIds:
+                    - subnet-03cab08269a2d4fda
+                AdditionalSecurityGroups:
+                    - sg-0e1f61a41a6ec9d1a
+                    - sg-0b779788d0c8b4f7f
+        -   Name: "compute-high"
+            ComputeSettings:
+                LocalStorage:
+                    RootVolume:
+                        Size: 1000
+                    EphemeralVolume:
+                        MountDir: /data
+            ComputeResources:
+
+                -   Name: c6i24xlarge
+                    InstanceType: "c6i.24xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+                -   Name: c6i32xlarge
+                    InstanceType: "c6i.32xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+                -   Name: c524xlarge
+                    InstanceType: "c5.24xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+                -   Name: c5n18xlarge
+                    InstanceType: "c5n.18xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+                -   Name: c5d24xlarge
+                    InstanceType: "c5d.24xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+            CustomActions:
+                OnNodeConfigured:
+                    Script: "s3://bioanalyze-hpc-dev-slurm/install_all_the_things.sh"
+            Iam:
+                S3Access:
+                    -   BucketName: "bioanalyze-hpc-dev-slurm"
+                        EnableWriteAccess: true
+                AdditionalIamPolicies:
+                    -   Policy: arn:aws:iam::115935009134:policy/slurm-policy
+                    -   Policy: arn:aws:iam::aws:policy/ReadOnlyAccess
+                    -   Policy: arn:aws:iam::aws:policy/AmazonS3FullAccess
+            Image:
+                CustomAmi: ami-0a1f818c896c17554
+            Networking:
+                SubnetIds:
+                    - subnet-03cab08269a2d4fda
+                AdditionalSecurityGroups:
+                    - sg-0e1f61a41a6ec9d1a
+                    - sg-0b779788d0c8b4f7f
+        -   Name: "gpu-1"
+            ComputeSettings:
+                LocalStorage:
+                    RootVolume:
+                        Size: 1000
+                    EphemeralVolume:
+                        MountDir: /data
+            ComputeResources:
+
+                -   Name: g22xlarge
+                    InstanceType: "g2.2xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+                -   Name: g28xlarge
+                    InstanceType: "g2.8xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+                -   Name: g4dn8xlarge
+                    InstanceType: "g4dn.8xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+                -   Name: g4dn12xlarge
+                    InstanceType: "g4dn.12xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+                -   Name: g4dn16xlarge
+                    InstanceType: "g4dn.16xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
+            CustomActions:
+                OnNodeConfigured:
+                    Script: "s3://bioanalyze-hpc-dev-slurm/install_all_the_things.sh"
+            Iam:
+                S3Access:
+                    -   BucketName: "bioanalyze-hpc-dev-slurm"
+                        EnableWriteAccess: true
+                AdditionalIamPolicies:
+                    -   Policy: arn:aws:iam::115935009134:policy/slurm-policy
+                    -   Policy: arn:aws:iam::aws:policy/ReadOnlyAccess
+                    -   Policy: arn:aws:iam::aws:policy/AmazonS3FullAccess
+            Image:
+                CustomAmi: ami-078f4c7ef95cfbf2a
+            Networking:
+                SubnetIds:
+                    - subnet-03cab08269a2d4fda
+                AdditionalSecurityGroups:
+                    - sg-0e1f61a41a6ec9d1a
+                    - sg-0b779788d0c8b4f7f
+        -   Name: "gpu-2"
+            ComputeSettings:
+                LocalStorage:
+                    RootVolume:
+                        Size: 1000
+                    EphemeralVolume:
+                        MountDir: /data
+            ComputeResources:
 
                 -   Name: g4dn8xlarge
                     InstanceType: "g4dn.8xlarge"
@@ -216,19 +497,25 @@ Scheduling:
                     MinCount: 0
                     MaxCount: 1000
 
+                -   Name: g4dn12xlarge
+                    InstanceType: "g4dn.12xlarge"
+                    MinCount: 0
+                    MaxCount: 1000
+
             CustomActions:
                 OnNodeConfigured:
-                    Script: "s3://test-hpc-dev-slurm/slurm-startup-scripts/install_all_the_things.sh"
+                    Script: "s3://bioanalyze-hpc-dev-slurm/install_all_the_things.sh"
             Iam:
                 S3Access:
-                    -   BucketName: "test-hpc-dev-slurm"
+                    -   BucketName: "bioanalyze-hpc-dev-slurm"
                         EnableWriteAccess: true
+                AdditionalIamPolicies:
+                    -   Policy: arn:aws:iam::115635009135:policy/slurm-policy
             Image:
-                CustomAmi: ami-gpuid
+                CustomAmi: ami-078f4c7ef95cfbf2a
             Networking:
                 SubnetIds:
-                    - subnet-123
+                    - subnet-03cab08269a2d4fda
                 AdditionalSecurityGroups:
-                    - sg-123
-                    - sg-456
-
+                    - sg-0e1f61a41a6ec9d1a
+                    - sg-0b779788d0c8b4f7f
