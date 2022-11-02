@@ -28,7 +28,7 @@ class NXFProcess(SinfoRow):
 class NXFSlurmConfig(SInfoTable):
     processes: Optional[Dict[str, NXFProcess]]
     default_processes: Optional[Dict[str, NXFProcess]]
-    include_mem: bool = False
+    include_memory: bool = False
     scheduleable_memory = 0.95
 
     @validator("processes", pre=True, always=True)
@@ -90,7 +90,7 @@ class NXFSlurmConfig(SInfoTable):
         with open(config_template_file, "r") as f:
             config_template = f.read()
         rtemplate = Environment(loader=BaseLoader).from_string(config_template)
-        use_memory = self.include_mem
+        use_memory = self.include_memory
         data = {
             "processes": self.processes,
             "default_processes": self.default_processes,

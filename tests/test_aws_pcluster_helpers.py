@@ -73,13 +73,19 @@ def test_load_instance_types_mapping():
     assert instance_types_mappings
 
 
-def test_nxf_gen_with_no_mem():
-    cli_gen_nxf_slurm_config.main(None, False, True, False, 0.95)
-    return
+# def test_nxf_gen_with_no_mem():
+#     cli_gen_nxf_slurm_config.main(None, False, True, False, 0.95)
+#     return
 
 
 def test_nxf_gen_with_mem():
-    cli_gen_nxf_slurm_config.main(None, False, True, True, 0.95)
+    cli_gen_nxf_slurm_config.main(
+        outfile=None,
+        overwrite=True,
+        stdout=True,
+        include_memory=True,
+        scheduleable_memory=0.95,
+    )
     return
 
 

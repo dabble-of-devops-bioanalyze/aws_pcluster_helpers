@@ -12,7 +12,8 @@ logger = setup_logger("nxf")
 
 def main(outfile, overwrite, stdout, include_memory, scheduleable_memory):
     nxf_slurm_config = nextflow.NXFSlurmConfig(
-        scheduleable_memory=scheduleable_memory, include_memory=include_memory
+        scheduleable_memory=scheduleable_memory,
+        include_memory=include_memory
     )
     data = nxf_slurm_config.print_slurm_config()
     if outfile:

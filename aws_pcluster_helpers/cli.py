@@ -28,9 +28,7 @@ def gen_nxf_slurm_config(
     scheduleable_memory: float = typer.Option(
         0.95, help="Schedulable amount of memory. Default is 95%"
     ),
-    output: str = typer.Option(
-        None, help="Path to nextflow slurm config file."
-    ),
+    output: str = typer.Option(None, help="Path to nextflow slurm config file."),
     overwrite: bool = typer.Option(False, help="Overwrite existing file."),
     stdout: bool = typer.Option(False, help="Write slurm config to stdout"),
 ):
@@ -41,9 +39,13 @@ def gen_nxf_slurm_config(
 
     Use the configuration in your process by setting the label to match the label in the config.
     """
-    print("Generating NXF Slurm config")
+    print(f"Generating NXF Slurm config : {include_memory}")
     cli_gen_nxf_slurm_config.main(
-        output, overwrite, stdout, include_memory, scheduleable_memory
+        outfile=output,
+        overwrite=overwrite,
+        stdout=stdout,
+        include_memory=include_memory,
+        scheduleable_memory=scheduleable_memory,
     )
 
 
