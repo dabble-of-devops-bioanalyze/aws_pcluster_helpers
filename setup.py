@@ -37,7 +37,7 @@ setup(
     long_description=readme + "\n\n" + history,
     include_package_data=True,
     keywords="aws_pcluster_helpers",
-    name="aws_pcluster_helpers",
+    name="aws-pcluster-helpers",
     entry_points={
         "console_scripts": [
             "pcluster-helper=aws_pcluster_helpers.cli:cli",

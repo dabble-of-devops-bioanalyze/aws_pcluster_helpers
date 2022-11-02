@@ -45,7 +45,8 @@ class SInfoTable(BaseModel):
     table_columns: List[Any] = [
         {"label": "Queue", "key": "queue"},
         {"label": "Constraint", "key": "constraint"},
-        {"label": "Mem(Gib)", "key": "mem"},
+        {"label": "TotalMem(Gib)", "key": "mem"},
+        {"label": "SchedulableMem(Gib)", "key": "scheduleable_memory_gib"},
         {"label": "VCPU", "key": "vcpu"},
         {"label": "CPU", "key": "cpu"},
         {"label": "EC2", "key": "ec2_instance_type"},

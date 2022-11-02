@@ -23,6 +23,8 @@ defaults = {
 class NXFProcess(SinfoRow):
     mem_min: int = 1
     cpu_min: int = 1
+    include_mem: bool = False
+    scheduleable_memory = 0.95
 
 
 class NXFSlurmConfig(SInfoTable):
