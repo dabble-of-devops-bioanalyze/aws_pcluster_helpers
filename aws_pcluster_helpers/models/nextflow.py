@@ -58,6 +58,9 @@ class NXFSlurmConfig(SInfoTable):
             "high_mem": dict(
                 label="high_memory", mem_min=72, cpu_min=12, mem=200, cpu=12, **defaults
             ),
+            "high_memory": dict(
+                label="high_memory", mem_min=72, cpu_min=12, mem=200, cpu=12, **defaults
+            ),
             "long": dict(
                 label="long", mem_min=12, cpu_min=1, mem=36, cpu=6, **defaults
             ),
