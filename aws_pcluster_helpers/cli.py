@@ -10,12 +10,10 @@ cli = typer.Typer()
 
 @cli.command()
 def sinfo(
-    include_memory: bool = typer.Option(
-        False, help="Include scheduleable memory"
-    ),
+    include_memory: bool = typer.Option(False, help="Include scheduleable memory"),
     scheduleable_memory: float = typer.Option(
         0.95, help="Schedulable amount of memory. Default is 95%"
-    )
+    ),
 ):
     """
     A more helpful sinfo
@@ -26,19 +24,15 @@ def sinfo(
 
 @cli.command()
 def gen_nxf_slurm_config(
-    include_memory: bool = typer.Option(
-        False, help="Include scheduleable memory"
-    ),
+    include_memory: bool = typer.Option(False, help="Include scheduleable memory"),
     scheduleable_memory: float = typer.Option(
         0.95, help="Schedulable amount of memory. Default is 95%"
     ),
-    output: typer.FileText = typer.Option(..., help="Path to nextflow slurm config file."),
-    overwrite: bool = typer.Option(
-        False, help="Overwrite existing file."
+    output: typer.FileText = typer.Option(
+        None, help="Path to nextflow slurm config file."
     ),
-    stdout: bool = typer.Option(
-        False, help="Write slurm config to stdout"
-    ),
+    overwrite: bool = typer.Option(False, help="Overwrite existing file."),
+    stdout: bool = typer.Option(False, help="Write slurm config to stdout"),
 ):
     """
     Generate a slurm.config for nextflow that is compatible with your cluster.
@@ -48,7 +42,9 @@ def gen_nxf_slurm_config(
     Use the configuration in your process by setting the label to match the label in the config.
     """
     print("Generating NXF Slurm config")
-    cli_gen_nxf_slurm_config.main(output, overwrite, stdout)
+    cli_gen_nxf_slurm_config.main(
+        output, overwrite, stdout, include_memory, scheduleable_memory
+    )
 
 
 if __name__ == "__main__":

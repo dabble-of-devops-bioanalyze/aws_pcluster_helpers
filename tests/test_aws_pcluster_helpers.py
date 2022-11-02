@@ -73,13 +73,13 @@ def test_load_instance_types_mapping():
     assert instance_types_mappings
 
 
-def test_nxf_gen():
-    instance_types_mappings = InstanceTypesMappings.from_json(
-        instance_type_mapping_file
-    )
-    pcluster_instance_types = PClusterInstanceTypes.from_json(instance_types_data_file)
-    pcluster_config = PClusterConfig.from_yaml(pcluster_config_file)
-    cli_gen_nxf_slurm_config.main(None, False, True)
+def test_nxf_gen_with_no_mem():
+    cli_gen_nxf_slurm_config.main(None, False, True, False, 0.95)
+    return
+
+
+def test_nxf_gen_with_mem():
+    cli_gen_nxf_slurm_config.main(None, False, True, True, 0.95)
     return
 
 

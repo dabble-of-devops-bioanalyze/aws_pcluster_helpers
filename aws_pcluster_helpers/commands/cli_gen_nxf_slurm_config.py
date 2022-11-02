@@ -10,8 +10,10 @@ from aws_pcluster_helpers.utils.logging import setup_logger
 logger = setup_logger("nxf")
 
 
-def main(outfile, overwrite, stdout):
-    nxf_slurm_config = nextflow.NXFSlurmConfig()
+def main(outfile, overwrite, stdout, include_memory, scheduleable_memory):
+    nxf_slurm_config = nextflow.NXFSlurmConfig(
+        scheduleable_memory=scheduleable_memory, include_memory=include_memory
+    )
     data = nxf_slurm_config.print_slurm_config()
     if outfile:
         if os.path.exists(outfile) and not overwrite:

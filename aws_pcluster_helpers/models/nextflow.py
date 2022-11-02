@@ -23,13 +23,13 @@ defaults = {
 class NXFProcess(SinfoRow):
     mem_min: int = 1
     cpu_min: int = 1
-    include_mem: bool = False
-    scheduleable_memory = 0.95
 
 
 class NXFSlurmConfig(SInfoTable):
     processes: Optional[Dict[str, NXFProcess]]
     default_processes: Optional[Dict[str, NXFProcess]]
+    include_mem: bool = False
+    scheduleable_memory = 0.95
 
     @validator("processes", pre=True, always=True)
     def set_processes(cls, v, values, **kwargs) -> Dict[str, NXFProcess]:
@@ -87,7 +87,7 @@ class NXFSlurmConfig(SInfoTable):
         with open(config_template_file, "r") as f:
             config_template = f.read()
         rtemplate = Environment(loader=BaseLoader).from_string(config_template)
-        use_memory = "3.1" not in PCLUSTER_VERSION
+        use_memory = self.include_mem
         data = {
             "processes": self.processes,
             "default_processes": self.default_processes,
