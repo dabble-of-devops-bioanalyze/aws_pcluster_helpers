@@ -28,7 +28,7 @@ def gen_nxf_slurm_config(
     scheduleable_memory: float = typer.Option(
         0.95, help="Schedulable amount of memory. Default is 95%"
     ),
-    output: typer.FileText = typer.Option(
+    output: str = typer.Option(
         None, help="Path to nextflow slurm config file."
     ),
     overwrite: bool = typer.Option(False, help="Overwrite existing file."),
