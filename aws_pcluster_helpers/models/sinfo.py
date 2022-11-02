@@ -27,7 +27,7 @@ class SinfoRow(BaseModel):
     mem: Optional[int]
     mem_mib: Optional[int]
     cpu: Optional[int]
-    scheduleable_memory: Optional[int] = 0.95
+    scheduleable_memory: Optional[float] = 0.95
     scheduleable_memory_mib: Optional[int]
     scheduleable_memory_gib: Optional[int]
     vcpu: Optional[int]
@@ -126,7 +126,7 @@ class SInfoTable(BaseModel):
                     compute_resource, "scheduleable_memory", 0.95
                 )
                 scheduleable_memory_mib = mem_in_mib * scheduleable_memory
-                scheduleable_memory_gib = mem_in_gib * scheduleable_memory
+                scheduleable_memory_gib = int(mem_in_gib * scheduleable_memory)
 
                 sinfo_records.append(
                     SinfoRow(

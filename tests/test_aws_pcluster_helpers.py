@@ -25,6 +25,9 @@ import os
 from devtools import PrettyFormat, pprint, pformat, debug
 from rich.console import Console
 
+from aws_pcluster_helpers.commands import cli_sinfo
+from aws_pcluster_helpers.commands import cli_gen_nxf_slurm_config
+
 instance_types_data_file = os.path.join(
     os.path.dirname(__file__), "instance-types-data.json"
 )
@@ -76,6 +79,7 @@ def test_nxf_gen():
     )
     pcluster_instance_types = PClusterInstanceTypes.from_json(instance_types_data_file)
     pcluster_config = PClusterConfig.from_yaml(pcluster_config_file)
+    cli_gen_nxf_slurm_config.main(None, False, True)
     return
 
 
