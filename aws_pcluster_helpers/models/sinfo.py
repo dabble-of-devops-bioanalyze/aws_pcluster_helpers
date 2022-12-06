@@ -52,18 +52,18 @@ class SInfoTable(BaseModel):
         {"label": "EC2", "key": "ec2_instance_type"},
     ]
     pcluster_config_files: PClusterConfigFiles = PClusterConfigFiles()
-    instance_type_mappings: Optional[InstanceTypesMappings]
+    # instance_type_mappings: Optional[InstanceTypesMappings]
     pcluster_instance_types: Optional[PClusterInstanceTypes]
     pcluster_config: Optional[SlurmClusterConfig]
     rows: Optional[List[SinfoRow]]
     dataframe: Optional[pd.DataFrame]
 
-    @validator("instance_type_mappings", pre=True, always=True)
-    def set_instance_type_mappings(cls, v, values, **kwargs):
-        pcluster_config_files = values.get("pcluster_config_files")
-        return InstanceTypesMappings.from_json(
-            pcluster_config_files.instance_name_type_mappings_file
-        )
+    # @validator("instance_type_mappings", pre=True, always=True)
+    # def set_instance_type_mappings(cls, v, values, **kwargs):
+    #     pcluster_config_files = values.get("pcluster_config_files")
+    #     return InstanceTypesMappings.from_json(
+    #         pcluster_config_files.instance_name_type_mappings_file
+    #     )
 
     @validator("pcluster_instance_types", pre=True, always=True)
     def set_pcluster_instance_types(cls, v, values, **kwargs):
@@ -80,7 +80,7 @@ class SInfoTable(BaseModel):
     @validator("rows", pre=True, always=True)
     def set_rows(cls, v, values, **kwargs) -> List[SinfoRow]:
         pcluster_config_files = values.get("pcluster_config_files")
-        instance_types_mappings = values.get("instance_type_mappings")
+        # instance_types_mappings = values.get("instance_type_mappings")
         pcluster_instance_types = values.get("pcluster_instance_types")
         pcluster_config = values.get("pcluster_config")
 
@@ -91,9 +91,10 @@ class SInfoTable(BaseModel):
             for compute_resource in compute_resources:
                 sinfo_label = {}
                 sinfo_instance_type = compute_resource.name
-                ec2_instance_type = instance_types_mappings.sinfo_instance_types[
-                    sinfo_instance_type
-                ]["ec2_instance_type"]
+                ec2_instance_type = compute_resource.instance_type
+                # ec2_instance_type = pcluster_instance_types[
+                #     sinfo_instance_type
+                # ]["ec2_instance_type"]
                 pcluster_instance_type = pcluster_instance_types.instance_type_data.get(
                     ec2_instance_type
                 )
