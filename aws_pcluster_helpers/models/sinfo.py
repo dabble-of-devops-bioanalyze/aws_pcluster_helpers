@@ -14,6 +14,10 @@ from pcluster.config.cluster_config import SlurmClusterConfig
 from pydantic import BaseModel
 from pydantic import validator
 from rich.table import Table
+import os
+
+if not os.environ.get('AWS_DEFAULT_REGION'):
+    os.environ['AWS_DEFAULT_REGION'] = 'us-east-1'
 
 logger = setup_logger(logger_name="sinfo")
 
