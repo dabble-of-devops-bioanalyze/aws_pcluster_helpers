@@ -1,6 +1,16 @@
 from typing import Any
 from typing import List, Optional
 
+import os
+from pydantic import ValidationError, validate_call
+from pydantic import BaseModel
+from pydantic import (
+    BaseModel,
+    FieldValidationInfo,
+    ValidationError,
+    field_validator,
+)
+
 import pandas as pd
 from aws_pcluster_helpers import (
     PClusterConfig,
@@ -11,10 +21,11 @@ from aws_pcluster_helpers import (
 from aws_pcluster_helpers.models.config import PClusterConfigFiles
 from aws_pcluster_helpers.utils.logging import setup_logger
 from pcluster.config.cluster_config import SlurmClusterConfig
-from pydantic import BaseModel
-from pydantic import validator
 from rich.table import Table
-import os
+
+from functools import cached_property
+
+from pydantic import BaseModel, computed_field
 
 if not os.environ.get('AWS_DEFAULT_REGION'):
     os.environ['AWS_DEFAULT_REGION'] = 'us-east-1'
@@ -23,20 +34,20 @@ logger = setup_logger(logger_name="sinfo")
 
 
 class SinfoRow(BaseModel):
-    sinfo_name: Optional[str]
-    label: Optional[str]
-    queue: Optional[str]
-    constraint: Optional[str]
-    ec2_instance_type: Optional[str]
-    mem: Optional[int]
-    mem_mib: Optional[int]
-    cpu: Optional[int]
+    sinfo_name: Optional[str] = None
+    label: Optional[str] = None
+    queue: Optional[str] = None
+    constraint: Optional[str] = None
+    ec2_instance_type: Optional[str] = None
+    mem: Optional[int] = None
+    mem_mib: Optional[int] = None
+    cpu: Optional[int] = None
     scheduleable_memory: Optional[float] = 0.95
-    scheduleable_memory_mib: Optional[int]
-    scheduleable_memory_gib: Optional[int]
-    vcpu: Optional[int]
-    gpus: Optional[List]
-    extra: Optional[dict]
+    scheduleable_memory_mib: Optional[float] = None
+    scheduleable_memory_gib: Optional[float] = None
+    vcpu: Optional[int] = None
+    gpus: Optional[List] = []
+    extra: Optional[dict] = None
 
 
 # TODO add custom ami lookup
@@ -56,37 +67,28 @@ class SInfoTable(BaseModel):
         {"label": "EC2", "key": "ec2_instance_type"},
     ]
     pcluster_config_files: PClusterConfigFiles = PClusterConfigFiles()
-    # instance_type_mappings: Optional[InstanceTypesMappings]
-    pcluster_instance_types: Optional[PClusterInstanceTypes]
-    pcluster_config: Optional[SlurmClusterConfig]
-    rows: Optional[List[SinfoRow]]
-    dataframe: Optional[pd.DataFrame]
 
-    # @validator("instance_type_mappings", pre=True, always=True)
-    # def set_instance_type_mappings(cls, v, values, **kwargs):
-    #     pcluster_config_files = values.get("pcluster_config_files")
-    #     return InstanceTypesMappings.from_json(
-    #         pcluster_config_files.instance_name_type_mappings_file
-    #     )
-
-    @validator("pcluster_instance_types", pre=True, always=True)
-    def set_pcluster_instance_types(cls, v, values, **kwargs):
-        pcluster_config_files = values.get("pcluster_config_files")
+    @computed_field
+    @property
+    def pcluster_instance_types(self) -> PClusterInstanceTypes:
+        pcluster_config_files = self.pcluster_config_files
         return PClusterInstanceTypes.from_json(
             pcluster_config_files.instance_types_data_file
         )
 
-    @validator("pcluster_config", pre=True, always=True)
-    def set_pcluster_config(cls, v, values, **kwargs):
-        pcluster_config_files = values.get("pcluster_config_files")
+    @computed_field
+    @property
+    def pcluster_config(self) -> PClusterConfig:
+        pcluster_config_files = self.pcluster_config_files
         return PClusterConfig.from_yaml(pcluster_config_files.pcluster_config_file)
 
-    @validator("rows", pre=True, always=True)
-    def set_rows(cls, v, values, **kwargs) -> List[SinfoRow]:
-        pcluster_config_files = values.get("pcluster_config_files")
+    @computed_field
+    @property
+    def rows(self) -> List[SinfoRow]:
+        pcluster_config_files = self.pcluster_config_files
         # instance_types_mappings = values.get("instance_type_mappings")
-        pcluster_instance_types = values.get("pcluster_instance_types")
-        pcluster_config = values.get("pcluster_config")
+        pcluster_instance_types = self.pcluster_instance_types
+        pcluster_config = self.pcluster_config
 
         sinfo_records = []
         for slurm_queue in pcluster_config.scheduling.queues:
@@ -154,10 +156,11 @@ class SInfoTable(BaseModel):
                 )
         return sinfo_records
 
-    @validator("dataframe", pre=True, always=True)
-    def set_dataframe(cls, v, values, **kwargs) -> pd.DataFrame:
+    @computed_field
+    @property
+    def dataframe(self) -> pd.DataFrame:
         records = []
-        rows = values.get("rows")
+        rows = self.rows
         for record in rows:
             records.append(record.__dict__)
         df = pd.DataFrame.from_records(records)

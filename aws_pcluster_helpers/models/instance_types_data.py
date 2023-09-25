@@ -9,24 +9,28 @@ from typing import Dict
 
 from mypy_boto3_ec2.type_defs import InstanceTypeDef
 from pydantic.dataclasses import dataclass
+from pydantic import BaseModel, computed_field
 
 from devtools import PrettyFormat, pprint, pformat, debug
 import json
 import os
 import yaml
 
+if not os.environ.get('AWS_DEFAULT_REGION'):
+    os.environ['AWS_DEFAULT_REGION'] = 'us-east-1'
+
 
 class Config:
     arbitrary_types_allowed = True
 
 
-@dataclass(config=Config)
-class InstanceTypesMappings:
+# @dataclass(config=Config)
+class InstanceTypesMappings(BaseModel):
     ec2_instance_types: Dict
     sinfo_instance_types: Dict
 
     @classmethod
-    def from_json(cls, json_file) -> InstanceTypesMappings:
+    def from_json(cls, json_file):
         """
         Data looks like this:
         "basic": {
@@ -58,8 +62,9 @@ class InstanceTypesMappings:
                 else:
                     inverse_data[instance_type]["queues"].append(queue)
                     data[sinfo_instance_type]["queues"].append(queue)
-        return InstanceTypesMappings(
-            ec2_instance_types=inverse_data, sinfo_instance_types=data
+        return cls(
+            ec2_instance_types=inverse_data,
+            sinfo_instance_types=data
         )
 
 
@@ -68,10 +73,10 @@ def size_in_gib(mib: int) -> int:
     return mib_bytes / mib_bytes.IEC_prefixes["Gi"]
 
 
-@dataclass(config=Config)
-class InstanceTypesData:
+class InstanceTypesData(BaseModel):
     data: Dict
 
+    @computed_field
     @property
     def instance_type_data(self) -> InstanceTypeDef:
         if "Hypervisor" in self.data.keys():
@@ -93,15 +98,14 @@ class InstanceTypesData:
         return InstanceTypesData(data=d)
 
 
-@dataclass
-class PClusterInstanceTypes:
+class PClusterInstanceTypes(BaseModel):
     instance_type_data: Dict[str, InstanceTypesData]
 
     @classmethod
-    def from_json(cls, json_file: str) -> PClusterInstanceTypes:
+    def from_json(cls, json_file: str):
         data = json.load(open(json_file))
         instance_type_defs = {}
         for k in data.keys():
             instance_type_defs[k] = InstanceTypesData(data={"data": data[k]})
 
-        return PClusterInstanceTypes(instance_type_data=instance_type_defs)
+        return cls(instance_type_data=instance_type_defs)

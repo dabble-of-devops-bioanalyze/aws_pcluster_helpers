@@ -4,7 +4,18 @@ from typing import Dict, Optional
 from aws_pcluster_helpers.models.sinfo import SInfoTable, SinfoRow
 from jinja2 import Environment, BaseLoader
 from pcluster import utils
-from pydantic import validator
+from typing import Any
+from typing import List, Optional
+
+import os
+from pydantic import ValidationError, validate_call
+from pydantic import BaseModel, computed_field
+from pydantic import (
+    BaseModel,
+    FieldValidationInfo,
+    ValidationError,
+    field_validator,
+)
 
 PCLUSTER_VERSION = utils.get_installed_version()
 
@@ -26,25 +37,27 @@ class NXFProcess(SinfoRow):
 
 
 class NXFSlurmConfig(SInfoTable):
-    processes: Optional[Dict[str, NXFProcess]]
-    default_processes: Optional[Dict[str, NXFProcess]]
+    # processes: Optional[Dict[str, NXFProcess]] = None
+    # default_processes: Optional[Dict[str, NXFProcess]] = None
     include_memory: bool = False
-    scheduleable_memory = 0.95
+    scheduleable_memory: float = 0.95
 
-    @validator("processes", pre=True, always=True)
-    def set_processes(cls, v, values, **kwargs) -> Dict[str, NXFProcess]:
+    @computed_field
+    @property
+    def processes(self) -> Dict[str, NXFProcess]:
         nxf_processes = {}
-        rows = values.get("rows", [])
+        rows = self.rows
         for row in rows:
             row_data = row.__dict__
             label = row_data["label"]
             nxf_processes[label] = NXFProcess(**row_data)
         return nxf_processes
 
-    @validator("default_processes", pre=True, always=True)
-    def set_default_processes(cls, v, values, **kwargs) -> Dict[str, NXFProcess]:
+    @computed_field
+    @property
+    def default_processes(self) -> Dict[str, NXFProcess]:
         # def set_default_processes(self) -> Dict[str, NXFProcess]:
-        processes = values.get("processes", [])
+        processes = self.processes
         # processes = self.processes
         default_processes = {
             "tiny": dict(label="tiny", mem_min=1, mem=6, cpu=1, **defaults),
