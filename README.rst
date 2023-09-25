@@ -6,13 +6,6 @@ AWS PCluster Helpers
 .. image:: https://img.shields.io/pypi/v/aws_pcluster_helpers.svg
         :target: https://pypi.python.org/pypi/aws_pcluster_helpers
 
-.. image:: https://img.shields.io/travis/dabble-of-devops-bioanalyze/aws_pcluster_helpers.svg
-        :target: https://travis-ci.com/dabble-of-devops-bioanalyze/aws_pcluster_helpers
-
-.. image:: https://readthedocs.org/projects/aws-pcluster-helpers/badge/?version=latest
-        :target: https://aws-pcluster-helpers.readthedocs.io/en/latest/?version=latest
-        :alt: Documentation Status
-
 Helpers to generate different configurations for PCluster
 
 Installation
