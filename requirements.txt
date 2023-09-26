@@ -11,4 +11,4 @@ pandas
 cookiecutter
 aws-parallelcluster==3.5.1
 typer
-pydantic>2
+pydantic>=2.3
