@@ -78,7 +78,9 @@ class SInfoTable(BaseModel):
 
     @computed_field
     @property
-    def pcluster_config(self) -> PClusterConfig:
+    def pcluster_config(
+        self,
+    ) -> PClusterConfig:
         pcluster_config_files = self.pcluster_config_files
         return PClusterConfig.from_yaml(pcluster_config_files.pcluster_config_file)
 

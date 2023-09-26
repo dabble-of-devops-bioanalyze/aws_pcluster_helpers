@@ -35,9 +35,6 @@ instance_type_mapping_file = os.path.join(
     os.path.dirname(__file__), "instance_name_type_mappings.json"
 )
 pcluster_config_file = os.path.join(os.path.dirname(__file__), "pcluster_config.yml")
-os.environ[ENV_INSTANCE_TYPE_MAPPINGS_FILE] = instance_type_mapping_file
-os.environ[ENV_INSTANCE_TYPES_DATA_FILE] = instance_types_data_file
-os.environ[ENV_PCLUSTER_CONFIG_FILE] = pcluster_config_file
 
 logger = setup_logger(logger_name="tests", log_level="DEBUG")
 
@@ -49,7 +46,14 @@ def test_files():
 
 
 def test_sinfo():
-    sinfo = SInfoTable()
+    pcluster_config_files = PClusterConfigFiles(
+        pcluster_config_file=pcluster_config_file,
+        instance_types_data_file=instance_types_data_file,
+        instance_type_mapping_file=instance_type_mapping_file,
+    )
+    sinfo = SInfoTable(
+        pcluster_config_files=pcluster_config_files
+    )
     table = sinfo.get_table()
     console = Console()
     console.print(table)
@@ -62,7 +66,6 @@ def test_load_pcluster_config():
 
 def test_load_instance_types_data():
     pcluster_instance_types = PClusterInstanceTypes.from_json(instance_types_data_file)
-    # debug(pcluster_instance_types)
     assert pcluster_instance_types
 
 
