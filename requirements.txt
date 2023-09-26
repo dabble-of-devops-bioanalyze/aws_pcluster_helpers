@@ -1,7 +1,5 @@
 devtools
 colorlog
-pydantic==2.3.0
-pydantic-core==2.6.3
 boto3
 boto3-stubs[essential]
 datasize
@@ -9,6 +7,6 @@ humanize
 rich-click
 pandas
 cookiecutter
-aws-parallelcluster==3.5.1
+aws-parallelcluster>=3.5
 typer
 pydantic>=2.3
